@@ -27,10 +27,8 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-  SidebarTrigger
 } from "@/components/ui/sidebar"
 import { Avatar } from "./ui/avatar"
-import { Button } from "./ui/button"
 import { useIsMobile } from "@/hooks/use-mobile"
 
 
