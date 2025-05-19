@@ -11,7 +11,8 @@ import {
   IconUsers,
   IconHelpCircle,
   IconBell,
-  IconUserCircle
+  IconUserCircle,
+  IconMenu2
 } from "@tabler/icons-react"
 
 import {
@@ -26,15 +27,23 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  SidebarTrigger
 } from "@/components/ui/sidebar"
 import { Avatar } from "./ui/avatar"
 import { Button } from "./ui/button"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const isMobile = useIsMobile();
+  
   return (
-    <Sidebar collapsible="none" variant="sidebar" {...props} >
-      <SidebarHeader>
+    <Sidebar 
+      collapsible={isMobile ? "offcanvas" : "none"} 
+      variant="sidebar" 
+      {...props}
+    >
+      <SidebarHeader className="py-2">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
@@ -43,6 +52,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             >
               <div className="flex items-center gap-1.5">
                 <span className="text-xl font-bold">abun</span>
+                {isMobile && <IconMenu2 className="ml-auto h-5 w-5" />}
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -80,7 +90,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenu>
           
           <SidebarMenuSub>
-            <SidebarMenuSubItem>
+            <SidebarMenuSubItem className="truncate">
               <SidebarMenuSubButton asChild>
                 <a href="#">Create Article</a>
               </SidebarMenuSubButton>
@@ -95,41 +105,52 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <a href="#">Keyword Projects</a>
               </SidebarMenuSubButton>
             </SidebarMenuSubItem>
-            <SidebarMenuSubItem>
+            <SidebarMenuSubItem className="truncate">
               <SidebarMenuSubButton asChild>
                 <a href="#">AI Keyword to Article</a>
               </SidebarMenuSubButton>
             </SidebarMenuSubItem>
-            <SidebarMenuSubItem>
-              <SidebarMenuSubButton asChild>
-                <a href="#">Steal Competitor Keyword</a>
-              </SidebarMenuSubButton>
-            </SidebarMenuSubItem>
-            <SidebarMenuSubItem>
-              <SidebarMenuSubButton asChild>
-                <a href="#">Import Keyword from GSC</a>
-              </SidebarMenuSubButton>
-            </SidebarMenuSubItem>
-            <SidebarMenuSubItem>
-              <SidebarMenuSubButton asChild>
-                <a href="#">Manual Keyword to Article</a>
-              </SidebarMenuSubButton>
-            </SidebarMenuSubItem>
-            <SidebarMenuSubItem>
-              <SidebarMenuSubButton asChild>
-                <a href="#">Bulk Keyword to Article</a>
-              </SidebarMenuSubButton>
-            </SidebarMenuSubItem>
-            <SidebarMenuSubItem>
-              <SidebarMenuSubButton asChild>
-                <a href="#">Longtail Keyword to Article</a>
-              </SidebarMenuSubButton>
-            </SidebarMenuSubItem>
-            <SidebarMenuSubItem>
+            {!isMobile && (
+              <>
+                <SidebarMenuSubItem className="truncate">
+                  <SidebarMenuSubButton asChild>
+                    <a href="#">Steal Competitor Keyword</a>
+                  </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+                <SidebarMenuSubItem className="truncate">
+                  <SidebarMenuSubButton asChild>
+                    <a href="#">Import Keyword from GSC</a>
+                  </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+                <SidebarMenuSubItem className="truncate">
+                  <SidebarMenuSubButton asChild>
+                    <a href="#">Manual Keyword to Article</a>
+                  </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+                <SidebarMenuSubItem className="truncate">
+                  <SidebarMenuSubButton asChild>
+                    <a href="#">Bulk Keyword to Article</a>
+                  </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+                <SidebarMenuSubItem className="truncate">
+                  <SidebarMenuSubButton asChild>
+                    <a href="#">Longtail Keyword to Article</a>
+                  </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+              </>
+            )}
+            <SidebarMenuSubItem className="truncate">
               <SidebarMenuSubButton asChild>
                 <a href="#">Article Settings</a>
               </SidebarMenuSubButton>
             </SidebarMenuSubItem>
+            {isMobile && (
+              <SidebarMenuSubItem className="truncate"  >
+                <SidebarMenuSubButton asChild>
+                  <a href="#" className="text-blue-600">See all options</a>
+                </SidebarMenuSubButton>
+              </SidebarMenuSubItem>
+            )}
           </SidebarMenuSub>
         </SidebarGroup>
 
@@ -172,70 +193,74 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenu>
         </SidebarGroup>
 
-        <SidebarGroup>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <a href="#" className="flex items-center gap-2">
-                  <IconPuzzle className="h-4 w-4" />
-                  <span>Integrations</span>
-                </a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
+        {!isMobile && (
+          <>
+            <SidebarGroup>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <a href="#" className="flex items-center gap-2">
+                      <IconPuzzle className="h-4 w-4" />
+                      <span>Integrations</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroup>
 
-        <SidebarGroup>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <a href="#" className="flex items-center gap-2">
-                  <IconSettings className="h-4 w-4" />
-                  <span>Subscription</span>
-                </a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
+            <SidebarGroup>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <a href="#" className="flex items-center gap-2">
+                      <IconSettings className="h-4 w-4" />
+                      <span>Subscription</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroup>
 
-        <SidebarGroup>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <a href="#" className="flex items-center gap-2">
-                  <IconUsers className="h-4 w-4" />
-                  <span>Affiliate Program</span>
-                </a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
+            <SidebarGroup>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <a href="#" className="flex items-center gap-2">
+                      <IconUsers className="h-4 w-4" />
+                      <span>Affiliate Program</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroup>
 
-        <SidebarGroup>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <a href="#" className="flex items-center gap-2">
-                  <IconHelpCircle className="h-4 w-4" />
-                  <span>Help Center</span>
-                </a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
+            <SidebarGroup>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <a href="#" className="flex items-center gap-2">
+                      <IconHelpCircle className="h-4 w-4" />
+                      <span>Help Center</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroup>
 
-        <SidebarGroup>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <a href="#" className="flex items-center gap-2">
-                  <IconBell className="h-4 w-4" />
-                  <span>Updates</span>
-                </a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
+            <SidebarGroup>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <a href="#" className="flex items-center gap-2">
+                      <IconBell className="h-4 w-4" />
+                      <span>Updates</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroup>
+          </>
+        )}
 
         <SidebarGroup>
           <SidebarMenu>
@@ -249,24 +274,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <a href="#" className="flex items-center gap-2">
-                  <IconUserCircle className="h-4 w-4" />
-                  <span>Profile</span>
-                </a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
       </SidebarContent>
-      
-      <SidebarFooter>
-        <div className="px-3 py-2">
-          <Button variant="outline" className="w-full">Sign Out</Button>
+
+      <SidebarFooter className="border-t p-4">
+        <div className="flex items-center gap-3">
+          <Avatar className="h-9 w-9">
+            <IconUserCircle className="h-6 w-6" />
+          </Avatar>
+          <div className="flex flex-col">
+            <span className="text-sm font-medium">Jane Smith</span>
+            <span className="text-xs text-muted-foreground">smith@amazon.com</span>
+          </div>
         </div>
       </SidebarFooter>
     </Sidebar>

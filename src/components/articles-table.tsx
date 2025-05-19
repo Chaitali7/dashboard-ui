@@ -1,8 +1,8 @@
-
 import { 
   IconChevronDown,
   IconSearch,
-  IconFilter
+  IconFilter,
+  IconDotsVertical
 } from "@tabler/icons-react"
 
 import { Button } from "@/components/ui/button"
@@ -28,6 +28,9 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { useLoading, TableRowSkeleton, SkeletonText } from "@/components/loading"
+import { useEffect } from "react"
 
 // Sample data based on the image
 const articlesData = [
@@ -105,36 +108,65 @@ const articlesData = [
   }
 ]
 
+// Simulate a data fetching function
+const fetchArticles = () => {
+  return new Promise<typeof articlesData>((resolve) => {
+    // Simulate network delay
+    setTimeout(() => {
+      resolve(articlesData);
+    }, 1500);
+  });
+};
+
 export function ArticlesTable() {
+  const isMobile = useIsMobile();
+  const { isLoading, showLoading, hideLoading } = useLoading();
+  
+  // Fetch data on component mount
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        showLoading();
+        await fetchArticles();
+      } finally {
+        hideLoading();
+      }
+    };
+    
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  
   return (
     <div className="space-y-4">
       <Tabs defaultValue="generated" className="w-full">
-        <TabsList className="grid grid-cols-4 md:w-auto md:inline-flex">
-          <TabsTrigger value="generated">Generated Articles</TabsTrigger>
-          <TabsTrigger value="published">Published Articles</TabsTrigger>
-          <TabsTrigger value="scheduled">Scheduled Articles</TabsTrigger>
-          <TabsTrigger value="archived">Archived Articles</TabsTrigger>
+        <TabsList className="truncate flex flex-row w-full text-xs sm:text-base">
+          <TabsTrigger value="generated">Generated</TabsTrigger>
+          <TabsTrigger value="published">Published</TabsTrigger>
+          <TabsTrigger value="scheduled">Scheduled</TabsTrigger>
+          <TabsTrigger value="archived">Archived</TabsTrigger>
         </TabsList>
         
-        <div className="flex items-center justify-between my-4">
-          <div className="relative w-full max-w-sm">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 my-4">
+          <div className="relative w-full sm:max-w-sm">
             <IconSearch className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search for Title & Keywords..."
+              placeholder="Search..."
               className="pl-8 w-full"
+              disabled={isLoading}
             />
           </div>
           
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto" disabled={isLoading}>
               <IconFilter className="mr-2 h-4 w-4" />
               Filter
             </Button>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button size="sm">
-                  Show 10
+                <Button size="sm" className="w-full sm:w-auto" disabled={isLoading}>
+                  Show {isMobile ? "" : "10"}
                   <IconChevronDown className="ml-2 h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -148,73 +180,140 @@ export function ArticlesTable() {
         </div>
         
         <TabsContent value="generated" className="space-y-4">
-          <div className="rounded-md border">
+          <div className="rounded-md border overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[40px]">
-                    <input type="checkbox" className="h-4 w-4 rounded border-gray-300" />
+                    <input 
+                      type="checkbox" 
+                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      disabled={isLoading}
+                    />
                   </TableHead>
                   <TableHead>Article Title</TableHead>
-                  <TableHead>Keyword [Traffic]</TableHead>
-                  <TableHead className="text-right">Words</TableHead>
-                  <TableHead>Created On</TableHead>
+                  {!isMobile && <TableHead>Keyword [Traffic]</TableHead>}
+                  {!isMobile && <TableHead className="text-right">Words</TableHead>}
+                  {!isMobile && <TableHead>Created On</TableHead>}
                   <TableHead>Action</TableHead>
-                  <TableHead>Publish</TableHead>
+                  {!isMobile && <TableHead>Publish</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {articlesData.map((article) => (
-                  <TableRow key={article.id}>
-                    <TableCell>
-                      <input type="checkbox" className="h-4 w-4 rounded border-gray-300" />
-                    </TableCell>
-                    <TableCell>{article.title}</TableCell>
-                    <TableCell>{article.keyword}</TableCell>
-                    <TableCell className="text-right">{article.words}</TableCell>
-                    <TableCell>{article.created}</TableCell>
-                    <TableCell>
-                      <Button variant="ghost" size="sm" className="h-8 px-2">
-                        View
-                      </Button>
-                    </TableCell>
-                    <TableCell>
-                      {article.status === "published" ? (
-                        <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">
-                          Published
-                        </Badge>
-                      ) : (
-                        <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                          •
-                        </Button>
+                {isLoading ? (
+                  <TableRowSkeleton isMobile={isMobile} rows={5} />
+                ) : (
+                  articlesData.map((article) => (
+                    <TableRow key={article.id}>
+                      <TableCell>
+                        <input 
+                          type="checkbox" 
+                          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <div className="font-medium truncate max-w-[200px] sm:max-w-[300px] md:max-w-none">
+                            {article.title}
+                          </div>
+                          {isMobile && (
+                            <div className="text-sm text-muted-foreground mt-1">
+                              {article.words} words · {article.created}
+                            </div>
+                          )}
+                        </div>
+                      </TableCell>
+                      {!isMobile && <TableCell>{article.keyword}</TableCell>}
+                      {!isMobile && <TableCell className="text-right">{article.words}</TableCell>}
+                      {!isMobile && <TableCell>{article.created}</TableCell>}
+                      <TableCell>
+                        {isMobile ? (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <IconDotsVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem>View</DropdownMenuItem>
+                              <DropdownMenuItem>Edit</DropdownMenuItem>
+                              <DropdownMenuItem>Publish</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        ) : (
+                          <Button variant="ghost" size="sm" className="h-8 px-2">
+                            View
+                          </Button>
+                        )}
+                      </TableCell>
+                      {!isMobile && (
+                        <TableCell>
+                          {article.status === "published" ? (
+                            <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">
+                              Published
+                            </Badge>
+                          ) : (
+                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                              •
+                            </Button>
+                          )}
+                        </TableCell>
                       )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </div>
           
-          <div className="flex items-center justify-between mt-4 border-t pt-4">
-            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-              <span>Total 9 Article Titles</span>
-              <span className="mx-1">|</span>
-              <span>Show</span>
-              <div className="relative inline-block mx-1">
-                <select className="appearance-none bg-background border rounded px-3 py-1 text-sm pr-7">
-                  <option>10</option>
-                </select>
-                <IconChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 pointer-events-none" />
-              </div>
-              <span>entries per page</span>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mt-4 border-t pt-4">
+            <div className="flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
+              {isLoading ? (
+                <SkeletonText width="w-40" />
+              ) : (
+                <>
+                  <span>Total 9 Article Titles</span>
+                  <span className="mx-1 hidden sm:inline">|</span>
+                  <span className="hidden sm:inline">Show</span>
+                  <div className="relative inline-block mx-1 hidden sm:inline-block">
+                    <select className="appearance-none bg-background border rounded px-3 py-1 text-sm pr-7" disabled={isLoading}>
+                      <option>10</option>
+                      <option>25</option>
+                      <option>50</option>
+                    </select>
+                    <IconChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 pointer-events-none" />
+                  </div>
+                  <span className="hidden sm:inline">entries per page</span>
+                </>
+              )}
             </div>
             
-            <div className="flex items-center">
-              <span className="text-sm text-muted-foreground">
-                <span className="px-1.5 py-0.5 border rounded">1</span>
-                <span className="mx-1">/</span>
-                <span>1</span>
-              </span>
+            <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto">
+              {isLoading ? (
+                <div className="flex items-center gap-4">
+                  <SkeletonText width="w-16" />
+                  <div className="flex gap-1">
+                    <SkeletonText width="w-20" height="h-8" />
+                    <SkeletonText width="w-16" height="h-8" />
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <span className="text-sm text-muted-foreground">
+                    <span className="px-1.5 py-0.5 border rounded bg-blue-50 text-blue-600 border-blue-200">1</span>
+                    <span className="mx-1">/</span>
+                    <span>1</span>
+                  </span>
+                  <div className="flex items-center gap-1 ml-2">
+                    <Button variant="outline" size="sm" disabled className="h-8 px-2 text-xs sm:text-sm">
+                      Previous
+                    </Button>
+                    <Button variant="outline" size="sm" disabled className="h-8 px-2 text-xs sm:text-sm">
+                      Next
+                    </Button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </TabsContent>
