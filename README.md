@@ -18,7 +18,6 @@ This project implements a clean, modern dashboard interface with:
 - **Vite** for fast development
 - **shadcn/ui** for component library
 - **Tailwind CSS** for styling
-- **React Router** for navigation
 - **Tabler Icons** for iconography
 
 ## Key Features
